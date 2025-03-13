@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider, Sidebar, SidebarInset } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import { DashboardFooter } from "@/components/Foooter/footer";
 import { DashboardSidebar } from "@/components/sidebarelem/dashboardsidebar";
 import { DashboardHeader } from "@/components/Headerdashboard/header";
@@ -33,12 +33,12 @@ export default function RootLayout({
         suppressHydrationWarning
       > 
        <SidebarProvider>
-      <div className="flex min-h-screen bg-background">
+      <div className="flex min-h-screen bg-background w-screen m-2">
         <DashboardSidebar />
         <SidebarInset>
           <div className="flex flex-col w-full">
             <DashboardHeader />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 w-full">{children}</main>
             <DashboardFooter />
           </div>
         </SidebarInset>

@@ -1,7 +1,7 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
-import { Truck } from "lucide-react"
+import Image from "next/image"
 
 export function WelcomeBanner({ progress, destination, remainingDistance }: {
   progress: number
@@ -13,16 +13,18 @@ export function WelcomeBanner({ progress, destination, remainingDistance }: {
       <div className="flex items-center gap-6">
         <div className="relative h-20 w-20 overflow-hidden rounded-xl border-4 border-primary/80 shadow-lg">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-indigo-500/40 animate-pulse" />
-          <img
+          <Image
             src="/placeholder.svg"
             alt="Truck"
-            className="h-full w-full object-cover relative z-10"
+            layout="fill"
+            objectFit="cover"
+            className="relative z-10"
           />
         </div>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Welcome back, John!</h1>
           <p className="text-muted-foreground">
-            You're on your way to {destination}. {remainingDistance} miles to go.
+            You`&apos;`re on your way to {destination}. {remainingDistance} miles to go.
           </p>
           <div className="mt-2 flex items-center text-sm">
             <span className="font-medium mr-2">Trip Progress:</span>
