@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { DashboardFooter } from "@/components/Foooter/footer";
@@ -28,25 +27,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html >
       <body
-        className={`${geistSans.variable} ${geistMono.variable}`}
-        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable}` }
       >
-        <ThemeProvider attribute="class" defaultTheme="system">
-          <SidebarProvider>
-            <div className="flex min-h-screen bg-background w-full m-1">
-              <DashboardSidebar />
-              <SidebarInset>
-                <div className="flex flex-col w-full">
-                  <DashboardHeader />
-                  <main className="flex-1 w-full">{children}</main>
-                  <DashboardFooter />
-                </div>
-              </SidebarInset>
-            </div>
-          </SidebarProvider>
-        </ThemeProvider>
+        <SidebarProvider >
+          <div className="flex min-h-screen bg-background w-full m-1">
+            <DashboardSidebar />
+            <SidebarInset>
+              <div className="flex flex-col w-full">
+                <DashboardHeader />
+                <main className="flex-1 w-full relative">{children}</main>
+                <DashboardFooter />
+              </div>
+            </SidebarInset>
+          </div>
+        </SidebarProvider>
       </body>
     </html>
   );

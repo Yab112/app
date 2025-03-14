@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
-import { navigationItems, reportItems, settingItems } from "@/app/constants"
+import { useState } from "react";
+import { navigationItems, reportItems, settingItems } from "@/app/constants";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -8,17 +9,22 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarSeparator
-} from "@/components/ui/sidebar"
-import Link from "next/link"
+  SidebarSeparator,
+} from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export function SidebarNavigation() {
+  const [activeItem, setActiveItem] = useState<string | null>(null);
+
+  const handleItemClick = (label: string) => {
+    setActiveItem(label);
+  };
 
   return (
     <>
       {/* Main Navigation */}
       <SidebarGroup>
-        <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground px-2 py-1.5 group-data-[collapsible=icon]:hidden overflow-hidden">
+        <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground px-2 py-1.5 group-data-[collapsible=icon]:hidden">
           Navigation
         </SidebarGroupLabel>
         <SidebarGroupContent>
@@ -27,15 +33,23 @@ export function SidebarNavigation() {
               <SidebarMenuItem key={item.label}>
                 <SidebarMenuButton
                   asChild
-                  isActive={item.active}
+                  isActive={activeItem === item.label}
                   tooltip={item.label}
-                  className="group transition-all hover:bg-blue-50 dark:hover:bg-blue-950/40"
+                  className={`group transition-all hover:bg-blue-50 dark:hover:bg-blue-950/40 ${
+                    activeItem === item.label ? "bg-blue-100 p-4 dark:bg-blue-900/50 text-[19px] text-blue-900/50 font-semibold" : ""
+                  }`}
+                  onClick={() => handleItemClick(item.label)}
                 >
-                  <Link href={item.href} className="flex items-center gap-3 py-2.5">
+                  <Link
+                    href={item.href}
+                    className="flex items-center gap-3 py-2.5"
+                  >
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors">
                       <item.icon className="h-5 w-5" />
                     </div>
-                    <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.label}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -58,13 +72,21 @@ export function SidebarNavigation() {
                 <SidebarMenuButton
                   asChild
                   tooltip={item.label}
-                  className="group transition-all hover:bg-blue-50 dark:hover:bg-blue-950/40"
+                  className={`group transition-all hover:bg-blue-50 dark:hover:bg-blue-950/40 ${
+                   activeItem === item.label ? "bg-blue-100 p-4 dark:bg-blue-900/50" : ""
+                  }`}
+                  onClick={() => handleItemClick(item.label)}
                 >
-                  <a href={item.href} className="flex items-center gap-3 py-2.5">
+                  <a
+                    href={item.href}
+                    className="flex items-center gap-3 py-2.5"
+                  >
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-700/50 transition-colors">
                       <item.icon className="h-5 w-5" />
                     </div>
-                    <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.label}
+                    </span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -87,13 +109,21 @@ export function SidebarNavigation() {
                 <SidebarMenuButton
                   asChild
                   tooltip={item.label}
-                  className="group transition-all hover:bg-blue-50 dark:hover:bg-blue-950/40"
+                  className={`group transition-all hover:bg-blue-50 dark:hover:bg-blue-950/40 ${
+                    activeItem === item.label ? "bg-blue-100 p-4 dark:bg-blue-900/50" : ""
+                  }`}
+                  onClick={() => handleItemClick(item.label)}
                 >
-                  <a href={item.href} className="flex items-center gap-3 py-2.5">
+                  <a
+                    href={item.href}
+                    className="flex items-center gap-3 py-2.5"
+                  >
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800/50 text-gray-600 dark:text-gray-400 group-hover:bg-gray-200 dark:group-hover:bg-gray-700/50 transition-colors">
                       <item.icon className="h-5 w-5" />
                     </div>
-                    <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.label}
+                    </span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -102,5 +132,5 @@ export function SidebarNavigation() {
         </SidebarGroupContent>
       </SidebarGroup>
     </>
-  )
+  );
 }
