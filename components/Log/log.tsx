@@ -5,7 +5,7 @@ import LogData from "../../types/type";
 interface ELDLogChartProps {
   logData: LogData;
 }
-const ELDLogChart = ({ logData }: ELDLogChartProps) => {
+const EldLogSheetCard = ({ logData }: ELDLogChartProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hours = 24;
   const statuses = ["Off Duty", "Sleeper Berth", "Driving", "On Duty"];
@@ -75,4 +75,4 @@ const ELDLogChart = ({ logData }: ELDLogChartProps) => {
   );
 };
 
-export default ELDLogChart;
+export default EldLogSheetCard;

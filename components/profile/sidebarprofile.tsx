@@ -9,11 +9,11 @@ export function SidebarUserProfile() {
   return (
     <div className="flex items-center gap-3 group-data-[collapsible=icon]:justify-center">
       <Avatar className="h-10 w-10 border-2 border-white dark:border-gray-800 shadow-sm">
-        <AvatarImage src="/placeholder-user.jpg" alt="Driver" />
+        <AvatarImage src="/maru_pic_linkedin.jpg" alt="Driver" />
         <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white">JD</AvatarFallback>
       </Avatar>
       <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-        <span className="text-sm font-medium">John Doe</span>
+        <span className="text-sm font-medium">Maru Getnet</span>
         <span className="text-xs text-muted-foreground">70-Hour Cycle</span>
       </div>
       <DropdownMenu>

@@ -1,14 +1,13 @@
 "use client"
 
 
-import {DriverStatsCard} from "@/components/cards/DriverStatsCard"
-import EldLogSheetCard from "@/components/cards/EldLogSheetCard"
-// import EldStatusCard from "@/components/cards/EldStatusCard"
-import {TripDetailsCard} from "@/components/cards/TripDetailsCard"
+import {DriverStats} from "@/components/cards/DriverStatsCard"
+import {TripSummary} from "@/components/cards/TripDetailsCard"
 import {UpcomingEventsCard} from "@/components/cards/UpcomingEventsCard"
+import EldLogSheetCard from "@/components/Log/log"
 import { WelcomeBanner } from "@/components/wellcomeview/wellcomeviewbanner"
 import { useState } from "react"
-
+import {stops} from "./constants"
 export default function Dashboard() {
   const [progress] = useState(0)
   const [drivingHours] = useState(3.5)
@@ -18,7 +17,7 @@ export default function Dashboard() {
   const [remainingDistance] = useState(371)
 
   return (
-    <div className="p-4 w-full">
+    <div className="p-4 w-full ">
       <WelcomeBanner 
         progress={progress}
         destination={destination}
@@ -33,15 +32,14 @@ export default function Dashboard() {
           /> */}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TripDetailsCard
+            <TripSummary
               currentLocation={currentLocation}
               destination={destination}
               remainingDistance={remainingDistance}
               totalDistance={525}
-              eta="5:30 PM"
-            />
+              eta="5:30 PM" stops={stops}/>
             
-            <DriverStatsCard
+            <DriverStats
               drivingHours={drivingHours}
               totalHours={totalHours}
             />
@@ -49,16 +47,11 @@ export default function Dashboard() {
         </div>
 
         <div className="space-y-4">
-          {/* <EldStatusCard
-            drivingHours={drivingHours}
-            totalHours={totalHours}
-          /> */}
-          
           <UpcomingEventsCard />
         </div>
 
         <div className="md:col-span-2 lg:col-span-3">
-          <EldLogSheetCard />
+          <EldLogSheetCard logData={[]} />
         </div>
       </div>
     </div>

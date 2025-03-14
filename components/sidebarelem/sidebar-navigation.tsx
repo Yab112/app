@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarSeparator
 } from "@/components/ui/sidebar"
+import Link from "next/link"
 
 export function SidebarNavigation() {
 
@@ -30,12 +31,12 @@ export function SidebarNavigation() {
                   tooltip={item.label}
                   className="group transition-all hover:bg-blue-50 dark:hover:bg-blue-950/40"
                 >
-                  <a href={item.href} className="flex items-center gap-3 py-2.5">
+                  <Link href={item.href} className="flex items-center gap-3 py-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors">
                       <item.icon className="h-5 w-5" />
                     </div>
                     <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
