@@ -30,6 +30,7 @@ export default function RootLayout({
     <html >
       <body
         className={`${geistSans.variable} ${geistMono.variable}` }
+        suppressHydrationWarning
       >
         <SidebarProvider >
           <div className="flex min-h-screen bg-background w-full m-1">

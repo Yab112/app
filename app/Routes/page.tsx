@@ -90,7 +90,7 @@ export default function MapView() {
   }
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-background">
+    <div className="relative h-screen w-full overflow-hidden bg-background no-scrollbar">
       {/* Simple Map Placeholder - Replace with Google Maps API integration */}
       <div className="absolute inset-0">
         <Image

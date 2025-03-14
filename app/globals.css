@@ -126,3 +126,25 @@
   }
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
+.terminal-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.terminal-scrollbar::-webkit-scrollbar-track {
+  background: rgba(6, 78, 59, 0.1);
+}
+
+.terminal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.4);
+  border-radius: 3px;
+}
+
+.glow-cyan {
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
+}
