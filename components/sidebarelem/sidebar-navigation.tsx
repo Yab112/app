@@ -18,7 +18,7 @@ export function SidebarNavigation() {
     <>
       {/* Main Navigation */}
       <SidebarGroup>
-        <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground px-2 py-1.5 group-data-[collapsible=icon]:hidden">
+        <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground px-2 py-1.5 group-data-[collapsible=icon]:hidden overflow-hidden">
           Navigation
         </SidebarGroupLabel>
         <SidebarGroupContent>

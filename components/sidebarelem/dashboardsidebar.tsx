@@ -12,7 +12,7 @@ import { SidebarUserProfile } from "../profile/sidebarprofile"
 
 export function DashboardSidebar() {
   return (
-    <Sidebar variant="sidebar" collapsible="icon" className="border-r border-blue-100 dark:border-blue-900">
+    <Sidebar variant="sidebar" collapsible="icon" className="border-r border-blue-100 dark:border-blue-900 overflow-hidden">
       <SidebarHeader className="h-20 border-b border-blue-100 dark:border-blue-900 px-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40">
         <div className="flex items-center gap-3 font-semibold">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-md">

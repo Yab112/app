@@ -4,7 +4,7 @@
 import {DriverStats} from "@/components/cards/DriverStatsCard"
 import {TripSummary} from "@/components/cards/TripDetailsCard"
 import {UpcomingEventsCard} from "@/components/cards/UpcomingEventsCard"
-import EldLogSheetCard from "@/components/Log/log"
+// import EldLogSheetCard from "@/components/Log/log"
 import { WelcomeBanner } from "@/components/wellcomeview/wellcomeviewbanner"
 import { useState } from "react"
 import {stops} from "./constants"
@@ -50,9 +50,9 @@ export default function Dashboard() {
           <UpcomingEventsCard />
         </div>
 
-        <div className="md:col-span-2 lg:col-span-3">
+        {/* <div className="md:col-span-2 lg:col-span-3">
           <EldLogSheetCard logData={[]} />
-        </div>
+        </div> */}
       </div>
     </div>
   )
