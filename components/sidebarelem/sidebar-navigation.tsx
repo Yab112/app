@@ -36,7 +36,7 @@ export function SidebarNavigation() {
                   isActive={activeItem === item.label}
                   tooltip={item.label}
                   className={`group transition-all hover:bg-blue-50 dark:hover:bg-blue-950/40 ${
-                    activeItem === item.label ? "bg-blue-100 p-4 dark:bg-blue-900/50 text-[19px] text-blue-900/50 font-semibold" : ""
+                    activeItem === item.label ? "bg-blue-100 p-4 dark:bg-blue-600 text-blue-600 font-semibold" : ""
                   }`}
                   onClick={() => handleItemClick(item.label)}
                 >

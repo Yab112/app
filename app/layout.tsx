@@ -27,10 +27,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html >
+    <html suppressHydrationWarning >
       <body
-        className={`${geistSans.variable} ${geistMono.variable}` }
-        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable}` }suppressHydrationWarning
       >
         <SidebarProvider >
           <div className="flex min-h-screen bg-background w-full m-1">

@@ -31,7 +31,7 @@ export default function ELDLogger() {
     <ThemeProvider storageKey="eld-theme">
       <div className="flex min-h-screen flex-col bg-background text-foreground">
         {/* Mobile Date Selector */}
-        <div className="md:hidden flex items-center justify-between p-4 border-b no-scrollbar">
+        <div className="items-center justify-center p-4 gap-2 flex">
           <Button variant="outline" size="sm" onClick={handlePreviousDay}>
             <ChevronLeft className="h-4 w-4 mr-1" /> Previous
           </Button>
