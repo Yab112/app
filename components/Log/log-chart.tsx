@@ -3,18 +3,6 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Bar,
-  BarChart as RechartsBarChart,
-  CartesianGrid,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts"
-import { ChartContainer } from "@/components/ui/chart"
-import { Button } from "@/components/ui/button"
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -25,13 +13,9 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 import { toast } from "@/hooks/use-toast"
 
-// Status codes
-// 1: Driving (Green)
-// 2: On Duty (Blue)
-// 3: Sleeper Berth (Yellow)
-// 4: Off Duty (Gray)
 
 type LogEntry = {
   hour: string
@@ -44,10 +28,10 @@ type LogEntry = {
 }
 
 type LogChartProps = {
-  date: Date
+  date?: Date
 }
 
-export function LogChart({ date }: LogChartProps) {
+export function LogChart({ date = new Date() }: LogChartProps) {
   const [logData, setLogData] = useState<LogEntry[]>([])
   const [selectedEntry, setSelectedEntry] = useState<LogEntry | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -55,18 +39,19 @@ export function LogChart({ date }: LogChartProps) {
   const [dragStartHour, setDragStartHour] = useState<number | null>(null)
   const [dragEndHour, setDragEndHour] = useState<number | null>(null)
   const chartRef = useRef<HTMLDivElement>(null)
-//   const dragControls = useDragControls()
 
   // Generate initial log data based on date
   useEffect(() => {
     // This would normally fetch from an API based on the date
     // For demo purposes, we'll generate some sample data
+    const currentDate = date || new Date()
+    const dayOfMonth = currentDate.getDate()
+
     const hours = Array.from({ length: 24 }, (_, i) => {
       const hourStr = i < 12 ? `${i === 0 ? 12 : i} AM` : `${i === 12 ? 12 : i - 12} PM`
 
       // Generate different patterns based on the day of the month
       // to simulate different days having different logs
-      const dayOfMonth = date.getDate()
       let status = 4 // Default to Off Duty
 
       // Pattern based on day of month
@@ -173,14 +158,12 @@ export function LogChart({ date }: LogChartProps) {
     }
   }
 
-  const handleBarClick = (data: { activePayload?: { payload: LogEntry }[] }) => {
-      if (isDragging) return
-  
-      if (data.activePayload && data.activePayload.length > 0) {
-        setSelectedEntry(data.activePayload[0].payload)
-        setIsDialogOpen(true)
-      }
-    }
+  const handleCellClick = (entry: LogEntry) => {
+    if (isDragging) return
+
+    setSelectedEntry(entry)
+    setIsDialogOpen(true)
+  }
 
   const handleSaveChange = () => {
     if (selectedEntry) {
@@ -252,74 +235,96 @@ export function LogChart({ date }: LogChartProps) {
     }
   }
 
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: { payload: LogEntry }[] }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload
-      return (
-        <div className="rounded-lg border bg-background p-2 shadow-md">
-          <p className="font-medium">
-            {data.startTime} - {data.endTime}
-          </p>
-          <p className="text-sm">{getStatusName(data.status)}</p>
-          {data.location && <p className="text-xs text-muted-foreground">{data.location}</p>}
-        </div>
-      )
-    }
-    return null
-  }
+  // Calculate totals for each status
+  const statusTotals = [1, 2, 3, 4].map((status) => {
+    return logData.filter((entry) => entry.status === status).length
+  })
 
   return (
     <>
-      <div ref={chartRef} className="relative" onMouseUp={() => isDragging && handleDragEnd()}>
+      <div
+        ref={chartRef}
+        className="relative"
+        onMouseUp={() => isDragging && handleDragEnd()}
+        onMouseLeave={() => isDragging && handleDragEnd()}
+      >
         <AnimatePresence>
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
+            className="border rounded-lg p-4"
           >
-            <ChartContainer className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <RechartsBarChart
-                  data={logData}
-                  margin={{ top: 20, right: 0, left: 0, bottom: 5 }}
-                  barSize={20}
-                  onClick={(data) => data && handleBarClick(data.activePayload?.[0]?.payload)}
-                >
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis
-                    dataKey="hour"
-                    scale="band"
-                    tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => value.replace(" ", "")}
-                  />
-                  <YAxis hide />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="duration" radius={[4, 4, 0, 0]} cursor="pointer">
-                    {logData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={getStatusColor(entry.status)}
-                        onMouseDown={() => handleDragStart(entry.hourIndex)}
-                        onMouseOver={() => handleDragMove(entry.hourIndex)}
-                      />
-                    ))}
-                  </Bar>
-                </RechartsBarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+            <div className="text-center font-bold text-lg mb-4">
+              Driver&aposs Duty Log
+              <div className="text-sm font-normal text-gray-500">{date ? date.toLocaleDateString() : "Today"}</div>
+            </div>
+
+            {/* Hours header */}
+            <div className="flex">
+              <div className="w-24 flex-shrink-0"></div>
+              <div className="flex-1 flex border-b">
+                {Array.from({ length: 24 }, (_, i) => (
+                  <div key={i} className="flex-1 text-center text-xs">
+                    {i}
+                  </div>
+                ))}
+              </div>
+              <div className="w-16 flex-shrink-0 text-center text-xs font-semibold">Total</div>
+            </div>
+
+            {/* Status rows */}
+            <div className="flex flex-col">
+              {[4, 1, 2, 3].map((statusCode, rowIndex) => (
+                <div key={statusCode} className="flex h-10 items-center">
+                  <div className="w-24 flex-shrink-0 text-sm pr-2">
+                    {getStatusName(statusCode)
+                      .replace(" 🟢", "")
+                      .replace(" 🔵", "")
+                      .replace(" 🟡", "")
+                      .replace(" ⚪", "")}
+                  </div>
+                  <div className="flex-1 flex border-b">
+                    {Array.from({ length: 24 }, (_, hourIndex) => {
+                      const entry = logData.find((e) => e.hourIndex === hourIndex)
+                      const isActive = entry && entry.status === statusCode
+
+                      return (
+                        <div
+                          key={hourIndex}
+                          className="flex-1 flex items-center justify-center cursor-pointer"
+                          onClick={() => entry && handleCellClick(entry)}
+                          onMouseDown={() => handleDragStart(hourIndex)}
+                          onMouseOver={() => handleDragMove(hourIndex)}
+                        >
+                          <div
+                            className={`w-full h-6 ${isActive ? "" : "border border-dashed border-gray-300"}`}
+                            style={{
+                              backgroundColor: isActive ? getStatusColor(statusCode) : "transparent",
+                              borderRadius: isActive ? "4px" : "0",
+                            }}
+                          ></div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="w-16 flex-shrink-0 text-center font-semibold">{statusTotals[rowIndex]}h</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Drag selection overlay */}
+            {isDragging && dragStartHour !== null && dragEndHour !== null && (
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="h-full w-full flex items-center justify-center">
+                  <div className="bg-primary/20 border border-primary rounded-md px-4 py-2">
+                    Selecting: {Math.min(dragStartHour, dragEndHour)}:00 - {Math.max(dragStartHour, dragEndHour)}:00
+                  </div>
+                </div>
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
-
-        {/* Drag selection overlay */}
-        {isDragging && dragStartHour !== null && dragEndHour !== null && (
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="h-full w-full flex items-center justify-center">
-              <div className="bg-primary/20 border border-primary rounded-md px-4 py-2">
-                Selecting: {Math.min(dragStartHour, dragEndHour)}:00 - {Math.max(dragStartHour, dragEndHour)}:00
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Legend */}
         <div className="flex flex-wrap gap-3 mt-4 justify-center">
@@ -385,10 +390,12 @@ export function LogChart({ date }: LogChartProps) {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="bg-blue-600">
               Cancel
             </Button>
-            <Button onClick={handleSaveChange}>Save Changes</Button>
+            <Button onClick={handleSaveChange} variant="outline">
+              Save Changes
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

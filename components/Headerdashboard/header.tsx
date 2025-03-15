@@ -18,12 +18,12 @@ export function DashboardHeader() {
         <span className="text-sm font-medium">{currentTime}</span>
       </div>
       <div className="ml-auto flex items-center gap-4">
-        <TooltipProvider>
+        <TooltipProvider >
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="outline" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] text-primary-foreground">
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px] text-primary-foreground">
                   3
                 </span>
               </Button>
