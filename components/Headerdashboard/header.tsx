@@ -22,13 +22,13 @@ export function DashboardHeader() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="outline" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
+                <Bell className="h-5 w-5"/>
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[10px] text-primary-foreground">
                   3
                 </span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Notifications</TooltipContent>
+            <TooltipContent className="bg-blue-600">Notifications</TooltipContent>
           </Tooltip>
         </TooltipProvider>
 
@@ -37,11 +37,11 @@ export function DashboardHeader() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" className="">
                 <User className="h-5 w-5" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>Profile</TooltipContent>
+            <TooltipContent className="bg-blue-600">Profile</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>

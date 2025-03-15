@@ -5,6 +5,7 @@ import { UpcomingEventsCard } from "@/components/cards/UpcomingEventsCard";
 import { WelcomeBanner } from "@/components/wellcomeview/wellcomeviewbanner";
 import { StopsList } from "@/components/cards/StopsList";
 import { stops } from "./constants";
+import WeatherDisplay from "@/components/cards/WeatherDisplay";
 
 export default function Dashboard() {
   const progress = 0;
@@ -33,6 +34,7 @@ export default function Dashboard() {
               eta="5:30 PM"
               stops={stops}
             />
+            
             <DriverStats drivingHours={drivingHours} totalHours={totalHours} />
           </div>
         </div>
@@ -41,8 +43,11 @@ export default function Dashboard() {
           <UpcomingEventsCard />
         </div>
       </div>
-      <div className="p-4">
-        <StopsList stops={stops} />
+      <div className="p-4 flex gap-4">
+        <div>
+          <StopsList stops={stops} />
+        </div>
+        <WeatherDisplay/>
       </div>
     </div>
   );

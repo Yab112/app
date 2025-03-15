@@ -18,8 +18,8 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
 import { useMediaQuery } from "@/hooks/use-media-query"
+import { TripProgress } from "@/components/trip/TripProgress"
 
 // This would come from your API or state management
 const tripData = {
@@ -62,6 +62,8 @@ export default function MapView() {
   const [isPanelOpen, setIsPanelOpen] = useState(true)
 
   const isDesktop = useMediaQuery("(min-width: 768px)")
+  const progressPercent =34;
+
 
   useEffect(() => {
     if (!isDesktop) {
@@ -123,9 +125,8 @@ export default function MapView() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold">Trip Details</h2>
-                <Progress value={tripData.progress} className="h-2 mt-2" />
-                <p className="text-sm text-muted-foreground mt-1">{tripData.progress}% complete</p>
-              </div>
+                <TripProgress progressPercent={progressPercent} />
+                 </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
