@@ -15,7 +15,8 @@ import {
   Droplet,
   ArrowBigRight,
 } from "lucide-react";
-import { fetchWeatherData, WeatherData } from "../../service/api";
+import { fetchWeatherData} from "../../service/api";
+import { WeatherData } from "@/types/type";
 
 export default function WeatherDisplay() {
   const [weather, setWeather] = useState<WeatherData>({
