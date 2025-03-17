@@ -14,6 +14,8 @@ import { LogTable } from "@/components/Log/log-table"
 import { LogChart } from "@/components/Log/log-chart"
 import { ComplianceSummary } from "@/components/Log/compliancesummery"
 
+
+
 export default function ELDLogger() {
   const [date, setDate] = useState(new Date())
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
