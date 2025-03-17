@@ -2,21 +2,25 @@
 
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouteStore } from "@/store/useRouteStore";
+import L from "leaflet";
 
 // Dynamically import Map components (disable SSR)
 const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
 const Polyline = dynamic(() => import("react-leaflet").then(mod => mod.Polyline), { ssr: false });
 const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
+const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), { ssr: false });
 
 interface MapProps {
-  coordinates: [number, number][];
+  coordinates: [number, number][]; 
+  mandatoryStops?: [number, number][]; 
 }
 
-export default function Map({ coordinates }: MapProps) {
+export default function Map({ coordinates, mandatoryStops = [] }: MapProps) {
   const { routeData, fetchRoute } = useRouteStore();
+  const [userPosition, setUserPosition] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     if (coordinates.length > 1) {
@@ -24,7 +28,19 @@ export default function Map({ coordinates }: MapProps) {
     }
   }, [coordinates, fetchRoute]);
 
-  if (typeof window === "undefined") return null; // Ensure this runs only in the browser
+  // Get the user's current position
+  useEffect(() => {
+    if (typeof window !== "undefined" && "geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserPosition([position.coords.latitude, position.coords.longitude]);
+        },
+        (error) => {
+          console.error("Error fetching user position:", error);
+        }
+      );
+    }
+  }, []);
 
   return (
     <MapContainer
@@ -46,9 +62,33 @@ export default function Map({ coordinates }: MapProps) {
         />
       )}
 
-      {/* Start and End Markers */}
-      {coordinates.length > 0 && <Marker position={coordinates[0]} />} {/* Start */}
-      {coordinates.length > 1 && <Marker position={coordinates[coordinates.length - 1]} />} {/* End */}
+      {/* User's Current Position */}
+      {userPosition && (
+        <Marker position={userPosition} icon={currentIcon}>
+          <Popup>Your Current Position</Popup>
+        </Marker>
+      )}
+
+      {/* Start Marker */}
+      {coordinates.length > 0 && (
+        <Marker position={coordinates[0]} icon={startIcon}>
+          <Popup>Start Position</Popup>
+        </Marker>
+      )}
+
+      {/* Mandatory Stops */}
+      {mandatoryStops.map((stop, index) => (
+        <Marker key={`mandatory-${index}`} position={stop} icon={mandatoryStopIcon}>
+          <Popup>Mandatory Stop {index + 1}</Popup>
+        </Marker>
+      ))}
+
+      {/* End Marker */}
+      {coordinates.length > 1 && (
+        <Marker position={coordinates[coordinates.length - 1]} icon={endIcon}>
+          <Popup>End Position</Popup>
+        </Marker>
+      )}
     </MapContainer>
   );
 }
@@ -80,3 +120,28 @@ function decodePolyline(encoded: string) {
   }
   return points;
 }
+
+// Define custom icons for different markers
+const startIcon = new L.Icon({
+  iconUrl: "mapred.svg", // Path to your start icon
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+});
+
+const endIcon = new L.Icon({
+  iconUrl: "mapgreen.svg", // Path to your end icon
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+});
+
+const mandatoryStopIcon = new L.Icon({
+  iconUrl: "gas-station-svgrepo-com.svg", // Path to your mandatory stop icon
+  iconSize: [28, 28],
+  iconAnchor: [14, 28],
+});
+
+const currentIcon = new L.Icon({
+  iconUrl: "truck.svg", 
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+});
