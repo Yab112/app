@@ -31,15 +31,13 @@ function useChart() {
   return context
 }
 
-export interface ChartProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-const ChartContainer = React.forwardRef<HTMLDivElement, ChartProps>(({ className, ...props }, ref) => (
+const ChartContainer = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
   <div ref={ref} className={cn("w-full h-[350px]", className)} {...props} />
 ))
 ChartContainer.displayName = "ChartContainer"
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
-  const colorConfig = Object.entries(config).filter(([_, config]) => config.theme || config.color)
+  const colorConfig = Object.entries(config).filter(([ , config]) => config.theme || config.color)
 
   if (!colorConfig.length) {
     return null
