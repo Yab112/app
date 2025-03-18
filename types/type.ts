@@ -1,16 +1,10 @@
 
-
-import { LatLngExpression } from "leaflet";
 type status = "Off Duty" | "Sleeper Berth" | "Driving" | "On Duty";
 type LogEntry = {
     hour: number;
     status: status;
 }
 
-
-export interface MapProps {
-  routeCoordinates: LatLngExpression[];
-}
 
 
 export interface WeatherApiResponse {
@@ -67,6 +61,18 @@ export interface TripSummaryProps {
     totalDistance: number
     eta: string
     stops: Stop[]
+  }
+
+  export interface MandatoryStop {
+    location: [number, number];
+    name: string;
+    estimatedCost: number;
+    stopDuration: number;
+  }
+  
+  export interface MapProps {
+    coordinates: [number, number][];
+    mandatoryStops?: MandatoryStop[];
   }
 
 type LogData = LogEntry[];

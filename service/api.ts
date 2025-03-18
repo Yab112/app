@@ -26,6 +26,7 @@ export const fetchWeatherData = async (city: string): Promise<WeatherData> => {
       Thunderstorm: "stormy",
       Drizzle: "drizzle",
     };
+    console.log(weatherData.main.temp);
 
     return {
       city: weatherData.name,
@@ -36,6 +37,7 @@ export const fetchWeatherData = async (city: string): Promise<WeatherData> => {
       windSpeed: Math.round(weatherData.wind.speed * 3.6), // Convert m/s to km/h
       description: weatherData.weather[0].description,
     };
+    
   } catch (err) {
     console.error("Failed to fetch weather data:", err);
     throw new Error("Failed to fetch weather data.");
@@ -56,8 +58,13 @@ export async function getRoute(
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching route:", error);
-    return null;
+    if (axios.isAxiosError(error) && !error.response) {
+      console.error("Network error:", error);
+      throw new Error("Network error. Please check your connection.");
+    } else {
+      console.error("Error fetching route:", error);
+      return null;
+    }
   }
 }
 

@@ -9,8 +9,31 @@ import { Separator } from "@/components/ui/separator";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TripProgress } from "@/components/trip/TripProgress";
 import dynamic from "next/dynamic";
+import { MandatoryStop } from "@/types/type";
 
 const Map = dynamic(() => import("@/components/Map/map"), { ssr: false });
+
+const tripCoordinates: [number, number][] = [
+  [38.7749, -122.4194], // Start (San Francisco)
+  [38.5816, -121.4944]  // End (Sacramento)
+];
+
+const fuelStops: MandatoryStop[] = [
+  {
+    location: [37.8044, -122.2712], // Oakland (Shell Gas Station)
+    name: "Shell Gas Station",
+    estimatedCost: 50.0,
+    stopDuration: 15,
+  },
+  {
+    location: [38.2406, -121.9297], // Fairfield, CA (Chevron Fuel Stop)
+    name: "Chevron Fuel Stop",
+    estimatedCost: 45.0,
+    stopDuration: 10,
+  },
+];
+
+
 
 export default function MapView() {
   const [mapStyle, setMapStyle] = useState("streets");
@@ -34,16 +57,7 @@ export default function MapView() {
     <div className="relative h-screen w-full overflow-hidden bg-background no-scrollbar">
       {/* Map Component */}
       <div className="absolute inset-0 z-0">
-        <Map
-          coordinates={[
-            [37.7749, -122.4194], // Start
-            [34.0522, -118.2437], // End
-          ]}
-          mandatoryStops={[
-            [36.1699, -115.1398], // Mandatory stop 1
-            [35.6895, -139.6917], // Mandatory stop 2
-          ]}
-        />
+       <Map coordinates={tripCoordinates} mandatoryStops={fuelStops} />
       </div>
 
       {/* Trip Details Panel */}
