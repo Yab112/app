@@ -1,12 +1,16 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import Image from "next/image"
+import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
-export function WelcomeBanner({ progress, destination, remainingDistance }: {
-  progress: number
-  destination: string
-  remainingDistance: number
+export function WelcomeBanner({
+  progress,
+  destination,
+  remainingDistance,
+}: {
+  progress: number;
+  destination: string;
+  remainingDistance: number;
 }) {
   return (
     <div className="col-span-full bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 p-6 rounded-xl border border-blue-100 dark:border-blue-900">
@@ -22,9 +26,12 @@ export function WelcomeBanner({ progress, destination, remainingDistance }: {
           />
         </div>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Welcome back, Maru!</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Welcome back, Maru!
+          </h1>
           <p className="text-muted-foreground">
-            You&apos;re on your way to {destination}. {remainingDistance} miles to go.
+            You&apos;re on your way to {destination}. {remainingDistance} miles
+            to go.
           </p>
           <div className="mt-2 flex items-center text-sm">
             <span className="font-medium mr-2">Trip Progress:</span>
@@ -38,19 +45,14 @@ export function WelcomeBanner({ progress, destination, remainingDistance }: {
           </div>
         </div>
         <div className="ml-auto flex flex-col items-end">
-          <div className="text-sm text-muted-foreground mb-1">Current Status</div>
-          <Badge className="bg-green-500 hover:bg-green-600 animate-pulse">On Route</Badge>
-          <div className="relative h-10 w-10 mt-2">
-            <Image
-              src="/tracker_image.jpg"
-              alt="Tracker"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-full"
-            />
+          <div className="text-sm text-muted-foreground mb-1">
+            Current Status
           </div>
+          <Badge className="bg-green-500 hover:bg-green-600 animate-pulse">
+            On Route
+          </Badge>{" "}
         </div>
       </div>
     </div>
-  )
+  );
 }

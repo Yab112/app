@@ -9,35 +9,18 @@ import { Separator } from "@/components/ui/separator";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { TripProgress } from "@/components/trip/TripProgress";
 import dynamic from "next/dynamic";
-import { MandatoryStop } from "@/types/type";
+import TripForm from "@/components/TripForm/TripForm";
 
 const Map = dynamic(() => import("@/components/Map/map"), { ssr: false });
-
-const tripCoordinates: [number, number][] = [
-  [38.7749, -122.4194], // Start (San Francisco)
-  [38.5816, -121.4944]  // End (Sacramento)
-];
-
-const fuelStops: MandatoryStop[] = [
-  {
-    location: [37.8044, -122.2712], // Oakland (Shell Gas Station)
-    name: "Shell Gas Station",
-    estimatedCost: 50.0,
-    stopDuration: 15,
-  },
-  {
-    location: [38.2406, -121.9297], // Fairfield, CA (Chevron Fuel Stop)
-    name: "Chevron Fuel Stop",
-    estimatedCost: 45.0,
-    stopDuration: 10,
-  },
-];
-
-
 
 export default function MapView() {
   const [mapStyle, setMapStyle] = useState("streets");
   const [isPanelOpen, setIsPanelOpen] = useState(true);
+  const [showForm] = useState(true); // Initially show the form
+
+  // const toggleShowForm = () => {
+  //   setShowForm(!showForm);
+  // };
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const progressPercent = 34;
 
@@ -57,7 +40,7 @@ export default function MapView() {
     <div className="relative h-screen w-full overflow-hidden bg-background no-scrollbar">
       {/* Map Component */}
       <div className="absolute inset-0 z-0">
-       <Map coordinates={tripCoordinates} mandatoryStops={fuelStops} />
+        <Map />
       </div>
 
       {/* Trip Details Panel */}
@@ -71,40 +54,46 @@ export default function MapView() {
             className="absolute top-0 right-0 h-full w-80 bg-background/90 backdrop-blur-sm border-l border-border p-4 overflow-y-auto z-20 no-scrollbar"
           >
             <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold">Trip Details</h2>
-                <TripProgress progressPercent={progressPercent} />
-              </div>
+              {showForm ? (
+                <TripForm />
+              ) : (
+                <>
+                  <div>
+                    <h2 className="text-2xl font-bold">Trip Details</h2>
+                    <TripProgress progressPercent={progressPercent} />
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Distance</p>
-                  <p className="font-medium">09 miles</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Duration</p>
-                  <p className="font-medium">988</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Duty Hours</p>
-                  <p className="font-medium">9807</p>
-                </div>
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Distance</p>
+                      <p className="font-medium">09 miles</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Duration</p>
+                      <p className="font-medium">988</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Duty Hours</p>
+                      <p className="font-medium">9807</p>
+                    </div>
+                  </div>
 
-              <Separator />
+                  <Separator />
 
-              {/* Toggle Map Style */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Layers className="h-5 w-5" />
-                  <Label htmlFor="map-style">Satellite View</Label>
-                </div>
-                <Switch
-                  id="map-style"
-                  checked={mapStyle === "satellite"}
-                  onCheckedChange={toggleMapStyle}
-                />
-              </div>
+                  {/* Toggle Map Style */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Layers className="h-5 w-5" />
+                      <Label htmlFor="map-style">Satellite View</Label>
+                    </div>
+                    <Switch
+                      id="map-style"
+                      checked={mapStyle === "satellite"}
+                      onCheckedChange={toggleMapStyle}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </motion.div>
         )}

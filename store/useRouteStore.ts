@@ -1,17 +1,24 @@
 import { create } from "zustand";
 import { getRoute } from "@/service/api";
-import { RouteResponse } from "@/types/type";
+import { RouteResponse, MandatoryStop } from "@/types/type";
 
 interface RouteState {
   routeData: RouteResponse | null;
   loading: boolean;
+  coordinates: [number, number][]; // State for trip coordinates
+  mandatoryStops: MandatoryStop[]; // State for mandatory stops
   fetchRoute: (coordinates: [number, number][]) => Promise<void>;
+  setCoordinates: (coordinates: [number, number][]) => void; // Action to set coordinates
+  setMandatoryStops: (stops: MandatoryStop[]) => void; // Action to set mandatory stops
 }
 
 export const useRouteStore = create<RouteState>((set) => ({
   routeData: null,
   loading: false,
+  coordinates: [], // Initial state for coordinates
+  mandatoryStops: [], // Initial state for mandatory stops
 
+  // Fetch route data
   fetchRoute: async (coordinates) => {
     set({ loading: true });
     try {
@@ -24,4 +31,10 @@ export const useRouteStore = create<RouteState>((set) => ({
       set({ loading: false });
     }
   },
+
+  // Set trip coordinates
+  setCoordinates: (coordinates) => set({ coordinates }),
+
+  // Set mandatory stops
+  setMandatoryStops: (mandatoryStops) => set({ mandatoryStops }),
 }));

@@ -11,7 +11,7 @@ export function DashboardHeader() {
   const currentTime = useCurrentTime()
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
+    <header className="sticky top-0 z-100 flex h-16 items-center gap-4 border-b bg-background px-6">
       <SidebarTrigger className="-ml-1 h-9 w-9 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40" />
       <div className="flex items-center gap-2">
         <Clock className="h-5 w-5 text-muted-foreground" />

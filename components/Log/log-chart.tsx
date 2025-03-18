@@ -15,12 +15,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/hooks/use-toast"
-
+import { Save, Trash2, Plus, Clock } from "lucide-react"
 
 type LogEntry = {
   hour: string
   hourIndex: number
-  status: number
+  status: number | null
   duration: number
   location: string
   startTime: string
@@ -35,100 +35,84 @@ export function LogChart({ date = new Date() }: LogChartProps) {
   const [logData, setLogData] = useState<LogEntry[]>([])
   const [selectedEntry, setSelectedEntry] = useState<LogEntry | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [dragStartHour, setDragStartHour] = useState<number | null>(null)
   const [dragEndHour, setDragEndHour] = useState<number | null>(null)
+  const [newEntry, setNewEntry] = useState<Partial<LogEntry>>({
+    status: 1,
+    location: "",
+    startTime: "00:00",
+    endTime: "01:00",
+  })
+  const [totalStats, setTotalStats] = useState({
+    driving: 0,
+    onDuty: 0,
+    sleeperBerth: 0,
+    offDuty: 0,
+  })
   const chartRef = useRef<HTMLDivElement>(null)
 
-  // Generate initial log data based on date
+  // Calculate totals whenever logData changes
   useEffect(() => {
-    // This would normally fetch from an API based on the date
-    // For demo purposes, we'll generate some sample data
-    const currentDate = date || new Date()
-    const dayOfMonth = currentDate.getDate()
+    const newStats = {
+      driving: 0,
+      onDuty: 0,
+      sleeperBerth: 0,
+      offDuty: 0,
+    }
 
+    logData.forEach((entry) => {
+      if (entry.status === null) return
+
+      switch (entry.status) {
+        case 1:
+          newStats.driving += entry.duration
+          break
+        case 2:
+          newStats.onDuty += entry.duration
+          break
+        case 3:
+          newStats.sleeperBerth += entry.duration
+          break
+        case 4:
+          newStats.offDuty += entry.duration
+          break
+      }
+    })
+
+    // Only update if the stats have actually changed
+    if (JSON.stringify(newStats) !== JSON.stringify(totalStats)) {
+      setTotalStats(newStats)
+    }
+  }, [logData,totalStats])
+
+  // Initialize empty log data
+  useEffect(() => {
+    // Skip if we already have data (prevents unnecessary re-renders)
+    if (logData.length > 0) return
+
+    // Create empty log data for all 24 hours
     const hours = Array.from({ length: 24 }, (_, i) => {
       const hourStr = i < 12 ? `${i === 0 ? 12 : i} AM` : `${i === 12 ? 12 : i - 12} PM`
-
-      // Generate different patterns based on the day of the month
-      // to simulate different days having different logs
-      let status = 4 // Default to Off Duty
-
-      // Pattern based on day of month
-      if (dayOfMonth % 3 === 0) {
-        // Pattern 1
-        if (i >= 6 && i < 10)
-          status = 2 // On Duty
-        else if (i >= 10 && i < 14)
-          status = 1 // Driving
-        else if (i >= 14 && i < 15)
-          status = 2 // On Duty
-        else if (i >= 15 && i < 19)
-          status = 1 // Driving
-        else if (i >= 19 && i < 21)
-          status = 2 // On Duty
-        else if (i >= 21 && i < 24) status = 3 // Sleeper Berth
-      } else if (dayOfMonth % 3 === 1) {
-        // Pattern 2
-        if (i >= 4 && i < 6)
-          status = 3 // Sleeper Berth
-        else if (i >= 6 && i < 8)
-          status = 2 // On Duty
-        else if (i >= 8 && i < 12)
-          status = 1 // Driving
-        else if (i >= 12 && i < 13)
-          status = 2 // On Duty
-        else if (i >= 13 && i < 17)
-          status = 1 // Driving
-        else if (i >= 17 && i < 19)
-          status = 2 // On Duty
-        else if (i >= 19 && i < 23) status = 3 // Sleeper Berth
-      } else {
-        // Pattern 3
-        if (i >= 5 && i < 7)
-          status = 3 // Sleeper Berth
-        else if (i >= 7 && i < 9)
-          status = 2 // On Duty
-        else if (i >= 9 && i < 13)
-          status = 1 // Driving
-        else if (i >= 13 && i < 14)
-          status = 2 // On Duty
-        else if (i >= 14 && i < 18)
-          status = 1 // Driving
-        else if (i >= 18 && i < 20)
-          status = 2 // On Duty
-        else if (i >= 20 && i < 22) status = 3 // Sleeper Berth
-      }
-
-      // Generate location based on status
-      let location = ""
-      if (status === 1) {
-        location = `Highway I-${70 + (i % 10)}, Mile ${i * 20}`
-      } else if (status === 2) {
-        location = i < 12 ? "Truck Stop, Denver CO" : "Distribution Center, Kansas City MO"
-      }
-
-      // Format start and end times
-      const startHour = i
-      const endHour = i + 1
-      const startTime = `${startHour.toString().padStart(2, "0")}:00`
-      const endTime = `${endHour.toString().padStart(2, "0")}:00`
 
       return {
         hour: hourStr,
         hourIndex: i,
-        status,
+        status: null, // Empty status
         duration: 1,
-        location,
-        startTime,
-        endTime,
+        location: "",
+        startTime: `${i.toString().padStart(2, "0")}:00`,
+        endTime: `${(i + 1).toString().padStart(2, "0")}:00`,
       }
     })
 
     setLogData(hours)
-  }, [date])
+  }, [])
 
-  const getStatusColor = (status: number) => {
+  const getStatusColor = (status: number | null) => {
+    if (status === null) return "transparent"
+
     switch (status) {
       case 1:
         return "#22c55e" // green-500
@@ -143,7 +127,9 @@ export function LogChart({ date = new Date() }: LogChartProps) {
     }
   }
 
-  const getStatusName = (status: number) => {
+  const getStatusName = (status: number | null) => {
+    if (status === null) return "Empty"
+
     switch (status) {
       case 1:
         return "Driving 🟢"
@@ -216,10 +202,10 @@ export function LogChart({ date = new Date() }: LogChartProps) {
         hour: `${startHour}:00 - ${endHour}:00`,
         hourIndex: startHour,
         status: 1, // Default to Driving
-        duration: endHour - startHour,
+        duration: endHour - startHour + 1,
         location: "",
         startTime: `${startHour.toString().padStart(2, "0")}:00`,
-        endTime: `${endHour.toString().padStart(2, "0")}:00`,
+        endTime: `${(endHour + 1).toString().padStart(2, "0")}:00`,
       })
       setIsDialogOpen(true)
     }
@@ -235,10 +221,112 @@ export function LogChart({ date = new Date() }: LogChartProps) {
     }
   }
 
-  // Calculate totals for each status
-  const statusTotals = [1, 2, 3, 4].map((status) => {
-    return logData.filter((entry) => entry.status === status).length
-  })
+  // Add new log entry
+  const handleAddEntry = () => {
+    // Parse start and end times
+    const startTimeParts = newEntry.startTime?.split(":").map(Number) || [0, 0]
+    const endTimeParts = newEntry.endTime?.split(":").map(Number) || [0, 0]
+
+    const startHour = startTimeParts[0]
+    const endHour = endTimeParts[0]
+
+    // Validate times
+    if (startHour >= endHour) {
+      toast({
+        title: "Invalid time range",
+        description: "End time must be after start time",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Update all hours in the range
+    const updatedLogData = [...logData]
+    for (let i = startHour; i < endHour; i++) {
+      updatedLogData[i] = {
+        ...updatedLogData[i],
+        status: newEntry.status || 1,
+        location: newEntry.location || "",
+      }
+    }
+
+    setLogData(updatedLogData)
+    setIsAddDialogOpen(false)
+
+    // Reset new entry form
+    setNewEntry({
+      status: 1,
+      location: "",
+      startTime: "00:00",
+      endTime: "01:00",
+    })
+
+    toast({
+      title: "Log entry added",
+      description: `Added ${getStatusName(newEntry.status || 1)} from ${newEntry.startTime} to ${newEntry.endTime}`,
+    })
+  }
+
+  // Save logs to localStorage
+  const handleSaveLogs = () => {
+    try {
+      localStorage.setItem(`driver-logs-${date.toISOString().split("T")[0]}`, JSON.stringify(logData))
+      toast({
+        title: "Logs saved",
+        description: "Your logs have been saved successfully",
+      })
+    } catch (error) {
+      console.log(error)
+      toast({
+        title: "Error saving logs",
+        description: "There was an error saving your logs",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Clear all logs
+  const handleClearLogs = () => {
+    // Reset to empty logs
+    const emptyLogs = Array.from({ length: 24 }, (_, i) => {
+      const hourStr = i < 12 ? `${i === 0 ? 12 : i} AM` : `${i === 12 ? 12 : i - 12} PM`
+
+      return {
+        hour: hourStr,
+        hourIndex: i,
+        status: null, // Empty status
+        duration: 1,
+        location: "",
+        startTime: `${i.toString().padStart(2, "0")}:00`,
+        endTime: `${(i + 1).toString().padStart(2, "0")}:00`,
+      }
+    })
+
+    setLogData(emptyLogs)
+
+    toast({
+      title: "Logs cleared",
+      description: "All log entries have been cleared",
+    })
+  }
+
+  // Load saved logs on mount
+  useEffect(() => {
+    try {
+      const savedLogs = localStorage.getItem(`driver-logs-${date.toISOString().split("T")[0]}`)
+      if (savedLogs) {
+        setLogData(JSON.parse(savedLogs))
+        toast({
+          title: "Logs loaded",
+          description: "Your saved logs have been loaded",
+        })
+      }
+    } catch (error) {
+      console.error("Error loading saved logs:", error)
+    }
+  }, [date])
+
+
 
   return (
     <>
@@ -255,9 +343,37 @@ export function LogChart({ date = new Date() }: LogChartProps) {
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="border rounded-lg p-4"
           >
-            <div className="text-center font-bold text-lg mb-4">
-              Driver&aposs Duty Log
-              <div className="text-sm font-normal text-gray-500">{date ? date.toLocaleDateString() : "Today"}</div>
+            <div className="flex justify-between items-center mb-4">
+              <div className="text-center font-bold text-lg">
+                Driver&apos;s Duty Log
+                <div className="text-sm font-normal text-gray-500">{date ? date.toLocaleDateString() : "Today"}</div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsAddDialogOpen(true)}
+                  className="flex items-center gap-1 text-blue-600 border-blue-600 hover:bg-blue-50"
+                >
+                  <Plus className="h-4 w-4" /> Add Entry
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSaveLogs}
+                  className="flex items-center gap-1 text-blue-600 border-blue-600 hover:bg-blue-50"
+                >
+                  <Save className="h-4 w-4" /> Save
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClearLogs}
+                  className="flex items-center gap-1 text-red-500 hover:text-red-700 border-red-500"
+                >
+                  <Trash2 className="h-4 w-4" /> Clear
+                </Button>
+              </div>
             </div>
 
             {/* Hours header */}
@@ -270,12 +386,11 @@ export function LogChart({ date = new Date() }: LogChartProps) {
                   </div>
                 ))}
               </div>
-              <div className="w-16 flex-shrink-0 text-center text-xs font-semibold">Total</div>
             </div>
 
             {/* Status rows */}
             <div className="flex flex-col">
-              {[4, 1, 2, 3].map((statusCode, rowIndex) => (
+              {[4, 1, 2, 3].map((statusCode) => (
                 <div key={statusCode} className="flex h-10 items-center">
                   <div className="w-24 flex-shrink-0 text-sm pr-2">
                     {getStatusName(statusCode)
@@ -308,7 +423,6 @@ export function LogChart({ date = new Date() }: LogChartProps) {
                       )
                     })}
                   </div>
-                  <div className="w-16 flex-shrink-0 text-center font-semibold">{statusTotals[rowIndex]}h</div>
                 </div>
               ))}
             </div>
@@ -317,7 +431,7 @@ export function LogChart({ date = new Date() }: LogChartProps) {
             {isDragging && dragStartHour !== null && dragEndHour !== null && (
               <div className="absolute inset-0 pointer-events-none">
                 <div className="h-full w-full flex items-center justify-center">
-                  <div className="bg-primary/20 border border-primary rounded-md px-4 py-2">
+                  <div className="bg-blue-500/20 border border-blue-500 rounded-md px-4 py-2">
                     Selecting: {Math.min(dragStartHour, dragEndHour)}:00 - {Math.max(dragStartHour, dragEndHour)}:00
                   </div>
                 </div>
@@ -346,11 +460,37 @@ export function LogChart({ date = new Date() }: LogChartProps) {
           </div>
         </div>
 
+        {/* Daily summary */}
+        <div className="mt-4 p-4 border rounded-lg">
+          <h3 className="text-md font-semibold flex items-center gap-1 mb-2 text-blue-600">
+            <Clock className="h-4 w-4" /> Daily Summary
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <div className="p-2 bg-green-100 rounded-md">
+              <div className="text-xs text-green-800">Driving</div>
+              <div className="text-lg font-bold text-green-700">{totalStats.driving}h</div>
+            </div>
+            <div className="p-2 bg-blue-100 rounded-md">
+              <div className="text-xs text-blue-800">On Duty</div>
+              <div className="text-lg font-bold text-blue-700">{totalStats.onDuty}h</div>
+            </div>
+            <div className="p-2 bg-yellow-100 rounded-md">
+              <div className="text-xs text-yellow-800">Sleeper Berth</div>
+              <div className="text-lg font-bold text-yellow-700">{totalStats.sleeperBerth}h</div>
+            </div>
+            <div className="p-2 bg-gray-100 rounded-md">
+              <div className="text-xs text-gray-800">Off Duty</div>
+              <div className="text-lg font-bold text-gray-700">{totalStats.offDuty}h</div>
+            </div>
+          </div>
+        </div>
+
         <div className="text-center mt-2 text-sm text-muted-foreground">
           <p>Click on a time slot to edit or drag to select multiple hours</p>
         </div>
       </div>
 
+      {/* Edit Entry Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -365,7 +505,7 @@ export function LogChart({ date = new Date() }: LogChartProps) {
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="status">Duty Status</Label>
-              <Select value={selectedEntry?.status.toString()} onValueChange={handleStatusChange}>
+              <Select value={selectedEntry?.status?.toString() || ""} onValueChange={handleStatusChange}>
                 <SelectTrigger id="status">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -390,11 +530,99 @@ export function LogChart({ date = new Date() }: LogChartProps) {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="bg-blue-600">
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSaveChange} variant="outline">
+            <Button onClick={handleSaveChange} className="bg-blue-600 hover:bg-blue-700">
               Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Entry Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add New Log Entry</DialogTitle>
+            <DialogDescription>Create a new duty status entry for a specific time range</DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="new-status">Duty Status</Label>
+              <Select
+                value={newEntry.status?.toString() || "1"}
+                onValueChange={(value) => setNewEntry({ ...newEntry, status: Number.parseInt(value) })}
+              >
+                <SelectTrigger id="new-status">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Driving 🟢</SelectItem>
+                  <SelectItem value="2">On Duty 🔵</SelectItem>
+                  <SelectItem value="3">Sleeper Berth 🟡</SelectItem>
+                  <SelectItem value="4">Off Duty ⚪</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="start-time">Start Time</Label>
+                <Select
+                  value={newEntry.startTime}
+                  onValueChange={(value) => setNewEntry({ ...newEntry, startTime: value })}
+                >
+                  <SelectTrigger id="start-time">
+                    <SelectValue placeholder="Start time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 24 }, (_, i) => (
+                      <SelectItem key={i} value={`${i.toString().padStart(2, "0")}:00`}>
+                        {`${i.toString().padStart(2, "0")}:00`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="end-time">End Time</Label>
+                <Select
+                  value={newEntry.endTime}
+                  onValueChange={(value) => setNewEntry({ ...newEntry, endTime: value })}
+                >
+                  <SelectTrigger id="end-time">
+                    <SelectValue placeholder="End time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 24 }, (_, i) => (
+                      <SelectItem key={i} value={`${(i + 1).toString().padStart(2, "0")}:00`}>
+                        {`${(i + 1).toString().padStart(2, "0")}:00`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="new-location">Location</Label>
+              <Input
+                id="new-location"
+                value={newEntry.location || ""}
+                onChange={(e) => setNewEntry({ ...newEntry, location: e.target.value })}
+                placeholder="Enter location"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddEntry} className="bg-blue-600 hover:bg-blue-700">
+              Add Entry
             </Button>
           </DialogFooter>
         </DialogContent>
